@@ -1,17 +1,19 @@
-import Order from '../models/orderModel.js';
-import asyncHandler from 'express-async-handler';
+const {Order} = require('../models/orderModel.js');
+const asyncHandler = require('express-async-handler');
 
 // @desc 
 // @route   POST/api/orders
 // @access  private
 
-const addOrderItems = asyncHandler(async (req, res) => {
+const addOrder = asyncHandler(async (req, res) => {
     const {
         orderItems,
         orderAddress,
-        orderPrice,
-        totalPrice,
+        additionalPrices,
+        totalPrice
     } = req.body;
+
+    const user = req.user._id;
 
     if (orderItems && orderItems.length == 0) {
         res.status(400);
@@ -19,13 +21,11 @@ const addOrderItems = asyncHandler(async (req, res) => {
         return;
     } else {
         const order = new Order({
+            user,
             orderItems,
-            user: req.user._id,
             orderAddress,
-            itemsPrice,
-            taxPrice,
-            shippingPrice,
-            totalPrice,
+            additionalPrices,
+            totalPrice
         });
 
         const createdOrder = await order.save();
@@ -84,6 +84,15 @@ const getOrders = asyncHandler(async (req, res) => {
     res.json(orders)
 })
 
+
+// @desc get logged in user order by id
+// @route GET/api/orders/myorders/:id
+// @access Private
+const getMyOrderById = asyncHandler(async (req, res) => {
+    const orders = await Order.findById({_id: req.params.id, user: req.user._id}).populate('user', ' id name')
+    res.json(orders)
+})
+
 // @desc    update order to delivred
 // @route    GET/api/orders/:id/deliver
 // @access  Private/Admin
@@ -103,10 +112,11 @@ const updateOrderToDelivred = asyncHandler(async (req, res) => {
 
 
 module.exports = {
-    addOrderItems,
+    addOrder,
     getOrderById,
     updateOrderToPaid,
     getMyOrders,
+    getMyOrderById,
     getOrders,
     updateOrderToDelivred
 }

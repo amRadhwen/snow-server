@@ -26,7 +26,7 @@ const orderSchema = new Schema({
     postalCode: { type: Number, required: true },
     city: { type: String, required: true },
   },
-  orderPrice: {
+  additionalPrices: {
     type: Number,
     required: true,
     default: 0,
