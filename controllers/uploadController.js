@@ -3,7 +3,7 @@ const multer = require('multer');
 const asyncHandler = require("express-async-handler");
 
 
-const { 
+const {
     uploadPCover,
     uploadPImages,
     uploadPVideo
@@ -22,7 +22,7 @@ const uploadProductCover = asyncHandler( async (req, res) => {
             console.error(`${error.name}: ${error.message}(Invalid Image File)`);
         }
     })
-    
+
 })
 
 // !!!!!!!!!!!!!!!!
