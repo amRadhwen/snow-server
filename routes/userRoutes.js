@@ -13,6 +13,7 @@ const {protectUser, protectAdmin} = require("../middlewares/authMiddleware");
 // normal user and admin user operations
 Router.route("/")
     .get(protectUser, getUser)
+    .put(protectUser, updateUser)
     .post(createUser)
     
 Router.route("/auth").post(authUser);

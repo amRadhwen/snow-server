@@ -20,4 +20,4 @@ Router.route('/:id').get(protectAdmin, getOrderById);
 Router.route('/:id/pay').put(protectAdmin, updateOrderToPaid);
 Router.route('/:id/deliver').put(protectAdmin , updateOrderToDelivred);
 
-export default Router;
+module.exports = Router;

@@ -1,6 +1,6 @@
 const Router = require ("express").Router();
 
-const {protectAdmin, protectUser} = require("../middlewares/authMiddleware");
+const {protectAdmin} = require("../middlewares/authMiddleware");
 
 const {
     uploadProductCover,
@@ -8,9 +8,9 @@ const {
     uploadProductVideo
 } = require("../controllers/uploadController");
 
-Router.post("/product/cover", uploadProductCover);
-Router.post("/product/images", uploadProductImages);
-Router.post("/product/video", uploadProductVideo);
+Router.post("/product/cover", protectAdmin, uploadProductCover);
+Router.post("/product/images", protectAdmin, uploadProductImages);
+Router.post("/product/video", protectAdmin, uploadProductVideo);
 
 
 module.exports = Router;

@@ -33,7 +33,7 @@ const protectAdmin = asyncHandler(async (req, res, next) => {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET_CODE);
             req.user = await User.findById(decoded.id).select('-password');
-            if (req.user && req.user.is_admin) {
+            if (req.user && req.user.isAdmin) {
                 next()
             }
             else {

@@ -3,6 +3,12 @@ const cors = require("cors");
 const path = require("path");
 const morgan = require("morgan");
 
+//import routes
+const userRoutes = require("./routes/userRoutes");
+const productRoutes = require("./routes/productRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
+
 // configure env variables
 require("dotenv").config();
 
@@ -21,6 +27,10 @@ app.use("/products", express.static(path.join(__dirname, "/public/upload/product
 
 
 //routes
+app.use("/api/upload", uploadRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/product", productRoutes);
+app.use("/api/order", orderRoutes);
 
 
 // catch any other request

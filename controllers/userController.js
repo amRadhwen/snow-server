@@ -6,13 +6,18 @@ const {handlePathError} = require("../middlewares/errMiddleware.js");
 // authentificate user
 // return user without password and jwt token
 const authUser = asyncHandler(async (req, res)=>{
-    if(Object.keys(req.body).length && req.body.login.length && req.body.password.length) {
+    if(Object.keys(req.body).length && req.body.email.length && req.body.password.length) {
         const {email, password} = req.body;
-        const user = await User.findOne({email: login});
+        const user = await User.findOne({email});
         if(user && (await user.matchPassword(password))) {
             res.status(200)
                .json({
-                user,
+                _id: user._id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
                 token: generateToken(user._id)
             })
         }
@@ -32,33 +37,32 @@ const authUser = asyncHandler(async (req, res)=>{
 // return user without password and jwt token
 const createUser = asyncHandler(async (req, res)=>{
     if(Object.keys(req.body).length) {
-        const {
-            first_name,
-            last_name,
-            email,
-            password
-        } = req.body;
         const data = {
             first_name,
             last_name,
             email,
             password
-        };
+        } = req.body;
         const userExists = await User.findOne({email});
         if(userExists) {
             res.status(400).json({error: "User already exists"});
             throw new Error("User already exists");
         }
-        try {
-            const user = await User.create(data);
-            res.status(200).json({
-                user,
-                token: generateToken(user._id)
-            })
-        }
-        catch(err){
-            res.status(400).json({error: "Invalid user data"});
-            throw new Error("Invalid user data");
+        else {
+            try {
+                const user = await User.create(data);
+                res.status(200).json({
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    email: user.email,
+                    token: generateToken(user._id)
+                })
+            }
+            catch(err){
+                console.log(err);
+                res.status(400).json({error: "Invalid user data"});
+                throw new Error("Invalid user data");
+            }
         }
     }
     else {
@@ -68,8 +72,9 @@ const createUser = asyncHandler(async (req, res)=>{
 });
 
 
-// get user 'profile' informations using token
-// return user without password
+// @desc get user 'profile' informations using token
+// @route GET/api/user
+// @access Private
 const getUser = asyncHandler(async (req, res)=> {
     try {
         let user = await User.findById(req.user._id);
@@ -94,7 +99,7 @@ const getUser = asyncHandler(async (req, res)=> {
 // return updated user without password
 const updateUser = asyncHandler(async (req, res) => {
     if(Object.keys(req.body).length) {
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req.params.id);
         if(user) {
             user.first_name = req.body.first_name || user.first_name;
             user.last_name = req.body.last_name || user.last_name;
@@ -135,7 +140,7 @@ const updateUser = asyncHandler(async (req, res) => {
 // return deleted user without password
 const deleteUser = asyncHandler(async (req, res)=>{
     try {
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req.params.id);
         if(user) {
             const deletedUser = user.remove();
             if(deletedUser) {
