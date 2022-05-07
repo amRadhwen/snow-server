@@ -52,9 +52,12 @@ const createUser = asyncHandler(async (req, res)=>{
             try {
                 const user = await User.create(data);
                 res.status(200).json({
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    email: user.email,
+		     user: {
+		     	_id: user._id,
+		     	first_name: user.first_name,
+		     	last_name: user.last_name,
+		     	email: user.email
+		     },
                     token: generateToken(user._id)
                 })
             }
